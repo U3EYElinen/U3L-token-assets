@@ -1,0 +1,11 @@
+{
+  "name": "U3EYElinen",
+  "symbol": "U3L",
+  "decimals": 18,
+  "description": "U3L is the native utility token of the Linen Web4 ecosystem, designed for trading, staking, and powering decentralized applications. Backed by Polygon liquidity pools and professional ecosystem support.",
+  "website": "https://u3linen.com",
+  "explorer": "https://polygonscan.com/token/0x068320b6ddBA195b907d1F6811C55E95E0bf5D77",
+  "type": "ERC-20",
+  "chainId": 137,
+  "address": "0x068320b6ddBA195b907d1F6811C55E95E0bf5D77"
+}
