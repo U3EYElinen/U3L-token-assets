@@ -6,20 +6,25 @@
 <title>U3L Token | u3l.finance</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <style>
-    body { font-family: 'Orbitron', sans-serif; background-color: #0a0a0a; }
+    body { font-family: 'Orbitron', sans-serif; background-color: #0a0a0a; overflow-x: hidden; }
     .neon { color: #ff8c00; text-shadow: 0 0 5px #ff8c00, 0 0 10px #ff8c00, 0 0 20px #ff8c00; }
     .card { background: #111; border: 1px solid #ff8c00; border-radius: 12px; transition: transform 0.3s; }
     .card:hover { transform: translateY(-5px); box-shadow: 0 0 20px #ff8c00; }
     a.button { background: linear-gradient(90deg, #ff8c00, #ff4500); padding: 12px 28px; border-radius: 30px; font-weight: bold; transition: all 0.3s; }
     a.button:hover { background: linear-gradient(90deg, #ff4500, #ff8c00); transform: scale(1.05); }
+    #particles { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
+    .chart-container { background:#111; border:1px solid #ff8c00; border-radius:12px; padding:16px; }
 </style>
 </head>
 <body class="text-white">
 
+<canvas id="particles"></canvas>
+
 <!-- Header -->
-<header class="text-center py-12">
+<header class="text-center py-12 relative z-10">
     <img src="assets/logo.png" alt="U3L Logo" class="mx-auto w-32">
     <h1 class="neon text-5xl font-bold mt-4">U3L Token</h1>
     <p class="text-gray-400 mt-2 text-lg">The Future of Luxury & Technology in Crypto</p>
@@ -28,7 +33,7 @@
 </header>
 
 <!-- Token Stats -->
-<section class="px-6 md:px-20 py-12">
+<section class="px-6 md:px-20 py-12 relative z-10">
     <h2 class="text-4xl neon font-bold text-center mb-8">Token Stats</h2>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="tokenStats">
         <div class="card p-6 text-center">
@@ -50,8 +55,16 @@
     </div>
 </section>
 
+<!-- Live Chart -->
+<section class="px-6 md:px-20 py-12 relative z-10">
+    <h2 class="text-4xl neon font-bold text-center mb-8">Price Chart</h2>
+    <div class="chart-container max-w-4xl mx-auto">
+        <canvas id="priceChart"></canvas>
+    </div>
+</section>
+
 <!-- How to Buy -->
-<section class="bg-gray-900 px-6 md:px-20 py-12">
+<section class="bg-gray-900 px-6 md:px-20 py-12 relative z-10">
     <h2 class="text-4xl neon font-bold text-center mb-8">How to Buy U3L</h2>
     <ol class="list-decimal list-inside max-w-3xl mx-auto space-y-4 text-gray-300 text-lg">
         <li>Install MetaMask wallet on your browser or mobile device.</li>
@@ -62,7 +75,7 @@
 </section>
 
 <!-- Roadmap -->
-<section class="px-6 md:px-20 py-12">
+<section class="px-6 md:px-20 py-12 relative z-10">
     <h2 class="text-4xl neon font-bold text-center mb-8">Roadmap</h2>
     <div class="max-w-4xl mx-auto space-y-6">
         <p class="text-gray-300 text-lg">Q4 2025: Token Launch & Website Live</p>
@@ -73,7 +86,7 @@
 </section>
 
 <!-- Community -->
-<section class="bg-gray-900 px-6 md:px-20 py-12 text-center">
+<section class="bg-gray-900 px-6 md:px-20 py-12 text-center relative z-10">
     <h2 class="text-4xl neon font-bold mb-8">Join Our Community</h2>
     <div class="flex flex-col md:flex-row justify-center gap-6">
         <a href="#" class="button">Pinterest</a>
@@ -83,11 +96,46 @@
 </section>
 
 <!-- Footer -->
-<footer class="py-6 text-center text-gray-400">
+<footer class="py-6 text-center text-gray-400 relative z-10">
     &copy; 2025 U3L Token. All rights reserved. | <a href="https://u3l.finance" class="text-orange-400">u3l.finance</a>
 </footer>
 
 <script>
+// --- Particles Background ---
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+for(let i=0;i<100;i++){
+    particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*2+1,
+        dx: (Math.random()-0.5)*0.5,
+        dy: (Math.random()-0.5)*0.5
+    });
+}
+
+function animateParticles(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        p.x += p.dx;
+        p.y += p.dy;
+        if(p.x>canvas.width)p.x=0;
+        if(p.x<0)p.x=canvas.width;
+        if(p.y>canvas.height)p.y=0;
+        if(p.y<0)p.y=canvas.height;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,140,0,0.7)';
+        ctx.fill();
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
 // --- MetaMask Wallet Connect ---
 const connectWalletButton = document.getElementById('connectWallet');
 let provider;
@@ -106,7 +154,6 @@ connectWalletButton.addEventListener('click', async () => {
 // --- Live Token Stats ---
 async function fetchTokenStats() {
     try {
-        // Placeholder values; replace with real API call to Quickswap or DexTools
         const stats = {
             price: 1.04,
             liquidity: 2.52,
@@ -117,17 +164,34 @@ async function fetchTokenStats() {
         document.getElementById('liquidity').textContent = `$${stats.liquidity}`;
         document.getElementById('holders').textContent = stats.holders;
         document.getElementById('marketcap').textContent = `$${stats.marketCap}`;
-    } catch (err) {
-        console.error('Error fetching token stats:', err);
+
+        // Update chart
+        priceChart.data.labels.push(new Date().toLocaleTimeString());
+        priceChart.data.datasets[0].data.push(stats.price);
+        if(priceChart.data.labels.length>20){
+            priceChart.data.labels.shift();
+            priceChart.data.datasets[0].data.shift();
+        }
+        priceChart.update();
+    } catch(err){
+        console.error(err);
     }
 }
 
 fetchTokenStats();
-setInterval(fetchTokenStats, 30000); // refresh every 30s
+setInterval(fetchTokenStats, 15000);
 
 // --- Buy Button ---
 document.getElementById('buyButton').addEventListener('click', () => {
     window.open('https://quickswap.exchange/#/swap?outputCurrency=0x068320b6ddba195b907d1f6811c55e95e0bf5d77', '_blank');
+});
+
+// --- Chart.js Line Chart ---
+const ctxChart = document.getElementById('priceChart').getContext('2d');
+const priceChart = new Chart(ctxChart, {
+    type: 'line',
+    data: { labels: [], datasets:[{label:'U3L Price', data:[], borderColor:'#ff8c00', backgroundColor:'rgba(255,140,0,0.2)', tension:0.3}] },
+    options: { responsive:true, plugins:{legend:{labels:{color:'white'}}}, scales:{x:{ticks:{color:'white'}}, y:{ticks:{color:'white'}}} }
 });
 </script>
 
